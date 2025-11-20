@@ -1,3 +1,7 @@
+// Полная переписанная версия game.js без innerHTML/outerHTML
+// Только createElement, removeChild, textContent, classList
+
+// ------ Глобальные переменные ------
 const gridSize = 4;
 let board = [];
 let score = 0;
@@ -160,10 +164,49 @@ function showGameOver() {
   gameOverMessage.appendChild(document.createTextNode('Игра окончена!'));
   gameOverModal.classList.remove('hidden');
 
-  // Автоматический рестарт через небольшую задержку
-  setTimeout(() => {
-    gameOverModal.classList.add('hidden');
-    newGame();
+  // Показ модалки с формой для записи рекорда
+function showGameOver() {
+  while (gameOverMessage.firstChild) gameOverMessage.removeChild(gameOverMessage.firstChild);
+  gameOverMessage.appendChild(document.createTextNode('Игра окончена! Введите имя и сохраните результат.'));
+
+  gameOverModal.classList.remove('hidden');
+  showSaveForm();
+}
+
+// --- Лидерборд ---
+const leaderboard = JSON.parse(localStorage.getItem('leaderboard2048') || '[]');
+const saveNameInput = document.getElementById('saveNameInput');
+const saveScoreBtn = document.getElementById('saveScoreBtn');
+const savedLabel = document.getElementById('savedLabel');
+
+function showSaveForm() {
+  saveNameInput.classList.remove('hidden');
+  saveScoreBtn.classList.remove('hidden');
+  savedLabel.classList.add('hidden');
+  saveNameInput.value = '';
+}
+
+saveScoreBtn.onclick = () => {
+  const name = saveNameInput.value.trim();
+  if (!name) return;
+
+  leaderboard.push({ name, score, date: new Date().toLocaleString() });
+  leaderboard.sort((a, b) => b.score - a.score);
+  leaderboard.splice(10);
+
+  localStorage.setItem('leaderboard2048', JSON.stringify(leaderboard));
+
+  saveNameInput.classList.add('hidden');
+  saveScoreBtn.classList.add('hidden');
+
+  while (savedLabel.firstChild) savedLabel.removeChild(savedLabel.firstChild);
+  savedLabel.appendChild(document.createTextNode('Ваш рекорд сохранён!'));
+  savedLabel.classList.remove('hidden');
+};
+
+restartFromOverBtn.onclick = () => {
+  gameOverModal.classList.add('hidden');
+  newGame();();
   }, 1200);
 }
 
@@ -190,3 +233,4 @@ newBtn.addEventListener('click', newGame);
 // ------ Старт ------
 initGrid();
 newGame();
+
