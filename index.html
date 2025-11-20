@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html> 
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
@@ -24,28 +24,39 @@
 
     <main>
       <div class="board-wrap" id="boardWrap">
+
         <div class="grid" id="grid"></div>
         <div id="tilesLayer" class="tiles-layer"></div>
 
+        <!-- === GAME OVER MODAL — полностью согласовано с game.js === -->
         <div id="gameOverModal" class="overlay hidden">
           <div class="modal" id="gameOverBox">
+
             <p id="gameOverMessage">Игра окончена</p>
-            <div id="saveSection">
-              <input id="usernameInput" placeholder="Введите имя" class="text-input" />
-              <div class="row">
-                <button id="saveScoreBtn">Сохранить результат</button>
-                <button id="restartFromOverBtn" class="secondary">Начать заново</button>
-              </div>
-            </div>
+
+            <input id="saveNameInput" placeholder="Введите имя" class="text-input hidden"/>
+            <button id="saveScoreBtn" class="hidden">Сохранить результат</button>
+
             <div id="savedLabel" class="hidden saved-label">Ваш рекорд сохранён</div>
+
+            <div class="row end">
+              <button id="restartFromOverBtn" class="secondary">Начать заново</button>
+            </div>
+
           </div>
         </div>
 
+        <!-- === ЛИДЕРБОРД === -->
         <div id="leaderModal" class="overlay hidden">
           <div class="modal">
             <h3>Топ-10 лидеров</h3>
             <div class="table-wrap">
-              <table id="leaderTable"><thead><tr><th>Имя</th><th>Очки</th><th>Дата</th></tr></thead><tbody></tbody></table>
+              <table id="leaderTable">
+                <thead>
+                  <tr><th>Имя</th><th>Очки</th><th>Дата</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
             </div>
             <div class="row end">
               <button id="closeLeaderBtn" class="secondary">Закрыть</button>
@@ -53,8 +64,10 @@
             </div>
           </div>
         </div>
+
       </div>
 
+      <!-- === Мобильное управление === -->
       <div class="mobile-controls" id="mobileControls">
         <div class="row">
           <div></div>
@@ -74,3 +87,4 @@
   <script src="game.js"></script>
 </body>
 </html>
+
