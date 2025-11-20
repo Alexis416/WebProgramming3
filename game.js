@@ -1,7 +1,3 @@
-// Полная переписанная версия game.js без innerHTML/outerHTML
-// Только createElement, removeChild, textContent, classList
-
-// ------ Глобальные переменные ------
 const gridSize = 4;
 let board = [];
 let score = 0;
@@ -163,11 +159,17 @@ function showGameOver() {
   while (gameOverMessage.firstChild) gameOverMessage.removeChild(gameOverMessage.firstChild);
   gameOverMessage.appendChild(document.createTextNode('Игра окончена!'));
   gameOverModal.classList.remove('hidden');
+
+  // Автоматический рестарт через небольшую задержку
+  setTimeout(() => {
+    gameOverModal.classList.add('hidden');
+    newGame();
+  }, 1200);
 }
 
 restartFromOverBtn.onclick = () => {
   gameOverModal.classList.add('hidden');
-  newGame();
+  newGame();();
 };
 
 // ------ События клавиатуры ------
