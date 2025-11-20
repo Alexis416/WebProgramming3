@@ -1,90 +1,43 @@
-<!doctype html> 
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>2048 — native JS</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <title>Игра 2048</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>2048 (native JS)</h1>
-      <div class="controls">
-        <div class="scoreboard">
-          <div class="score-box">Очки<br><span id="score">0</span></div>
-          <div class="score-box">Рекорд<br><span id="best">0</span></div>
-        </div>
-        <div style="width:8px"></div>
-        <button id="undoBtn" class="secondary">Отмена</button>
-        <button id="newBtn">Новая</button>
-        <button id="leaderBtn" class="secondary">Лидерборд</button>
-      </div>
-    </header>
+    <h1>Игра 2048</h1>
+    <div class="score-container">Очки: <span id="score">0</span></div>
+    <div id="game-board"></div>
+    <div class="controls">
+        <button id="undo" disabled>Отменить ход</button>
+        <button id="new-game">Новая игра</button>
+        <button id="show-leaderboard">Лидеры</button>
+    </div>
 
-    <main>
-      <div class="board-wrap" id="boardWrap">
+    <div id="game-over-modal" class="modal hidden">
+        <p id="game-over-message">Игра окончена!</p>
+        <input type="text" id="name-input" placeholder="Введите ваше имя">
+        <button id="save-button">Сохранить результат</button>
+        <button id="restart-button">Начать заново</button>
+    </div>
 
-        <div class="grid" id="grid"></div>
-        <div id="tilesLayer" class="tiles-layer"></div>
+    <div id="leaderboard-modal" class="modal hidden">
+        <h2>Таблица рекордов</h2>
+        <table id="leaderboard-table">
+            <tr><th>Имя</th><th>Очки</th><th>Дата</th></tr>
+        </table>
+        <button id="close-leaderboard">Закрыть</button>
+    </div>
 
-        <!-- === GAME OVER MODAL — полностью согласовано с game.js === -->
-        <div id="gameOverModal" class="overlay hidden">
-          <div class="modal" id="gameOverBox">
+    <div id="mobile-controls">
+        <button data-dir="up">↑</button>
+        <button data-dir="left">←</button>
+        <button data-dir="down">↓</button>
+        <button data-dir="right">→</button>
+    </div>
 
-            <p id="gameOverMessage">Игра окончена</p>
-
-            <input id="saveNameInput" placeholder="Введите имя" class="text-input hidden"/>
-            <button id="saveScoreBtn" class="hidden">Сохранить результат</button>
-
-            <div id="savedLabel" class="hidden saved-label">Ваш рекорд сохранён</div>
-
-            <div class="row end">
-              <button id="restartFromOverBtn" class="secondary">Начать заново</button>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- === ЛИДЕРБОРД === -->
-        <div id="leaderModal" class="overlay hidden">
-          <div class="modal">
-            <h3>Топ-10 лидеров</h3>
-            <div class="table-wrap">
-              <table id="leaderTable">
-                <thead>
-                  <tr><th>Имя</th><th>Очки</th><th>Дата</th></tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-            <div class="row end">
-              <button id="closeLeaderBtn" class="secondary">Закрыть</button>
-              <button id="clearLeaderBtn">Очистить</button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- === Мобильное управление === -->
-      <div class="mobile-controls" id="mobileControls">
-        <div class="row">
-          <div></div>
-          <button class="dir-btn" data-dir="up">↑</button>
-          <div></div>
-        </div>
-        <div class="row">
-          <button class="dir-btn" data-dir="left">←</button>
-          <button class="dir-btn" data-dir="down">↓</button>
-          <button class="dir-btn" data-dir="right">→</button>
-        </div>
-      </div>
-
-    </main>
-  </div>
-
-  <script src="game.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
 
