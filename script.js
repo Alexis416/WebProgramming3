@@ -6,7 +6,6 @@ let prevScore = 0;
 let gameOver = false;
 let leaderboardActive = false;
 
-// HTML elements
 const boardContainer = document.getElementById('game-board');
 const scoreContainer = document.getElementById('score');
 const undoButton = document.getElementById('undo');
@@ -22,11 +21,9 @@ const leaderboardTable = document.getElementById('leaderboard-table');
 const closeLeaderboardButton = document.getElementById('close-leaderboard');
 const mobileControls = document.getElementById('mobile-controls');
 
-// Initialize
 init();
 
 function init() {
-    // Setup event listeners
     document.addEventListener('keydown', handleKey);
     undoButton.addEventListener('click', undoMove);
     newGameButton.addEventListener('click', newGame);
@@ -34,14 +31,12 @@ function init() {
     closeLeaderboardButton.addEventListener('click', hideLeaderboard);
     saveButton.addEventListener('click', saveResult);
     restartButton.addEventListener('click', newGame);
-    // mobile buttons
     mobileControls.addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON') {
             handleArrow(e.target.dataset.dir);
         }
     });
 
-    // touch events for swipe
     let startX, startY;
     boardContainer.addEventListener('touchstart', (e) => {
         const touch = e.changedTouches[0];
@@ -61,11 +56,9 @@ function init() {
         }
     });
 
-    // Load saved game or start new
     loadState();
 }
 
-// Create empty board 4x4
 function createEmptyBoard() {
     let b = [];
     for (let i = 0; i < BOARD_SIZE; i++) {
@@ -84,7 +77,6 @@ function newGame() {
     nameInput.style.display = 'inline-block';
     gameOverMessage.textContent = 'Игра окончена!';
     nameInput.value = '';
-    // spawn two initial tiles
     spawnTile();
     spawnTile();
     updateScore();
@@ -139,11 +131,9 @@ function spawnRandomTiles(count) {
 }
 
 function renderBoard() {
-    // Clear existing tiles
     while (boardContainer.firstChild) {
         boardContainer.removeChild(boardContainer.firstChild);
     }
-    // create tile elements
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             const val = board[r][c];
@@ -153,7 +143,6 @@ function renderBoard() {
                 tile.textContent = val;
                 tile.classList.add('tile-' + val);
             }
-            // position
             const gap = 10;
             const size = 80;
             tile.style.top = (r * (size + gap) + gap) + 'px';
@@ -182,7 +171,6 @@ function handleArrow(dir) {
 
 function handleMove(direction) {
     let moved = false;
-    // copy current board for undo
     const oldBoard = board.map(row => row.slice());
     const oldScore = score;
     if (direction === 'left') {
@@ -198,7 +186,6 @@ function handleMove(direction) {
         prevBoard = oldBoard.map(row => row.slice());
         prevScore = oldScore;
         undoButton.disabled = false;
-        // spawn 1 or 2 tiles
         const count = Math.random() < 0.5 ? 1 : 2;
         spawnRandomTiles(count);
         updateScore();
@@ -284,7 +271,6 @@ function compressCombine(arr) {
     let totalGained = 0;
     let row = arr.slice();
     do {
-        // compress non-zeros
         let filtered = row.filter(val => val !== 0);
         while (filtered.length < BOARD_SIZE) {
             filtered.push(0);
@@ -293,7 +279,6 @@ function compressCombine(arr) {
             row = filtered;
             moved = true;
         }
-        // combine
         let combined = false;
         for (let i = 0; i < BOARD_SIZE - 1; i++) {
             if (row[i] !== 0 && row[i] === row[i+1]) {
@@ -306,7 +291,6 @@ function compressCombine(arr) {
         }
         if (!combined) break;
     } while (true);
-    // final compress after loop
     let filtered = row.filter(val => val !== 0);
     while (filtered.length < BOARD_SIZE) {
         filtered.push(0);
@@ -323,7 +307,6 @@ function arraysEqual(a, b) {
 }
 
 function checkGameOver(showModal) {
-    // check any empty
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === 0) {
@@ -331,7 +314,6 @@ function checkGameOver(showModal) {
             }
         }
     }
-    // no empties: check adjacent equal
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE - 1; c++) {
             if (board[r][c] === board[r][c+1]) return false;
@@ -342,7 +324,6 @@ function checkGameOver(showModal) {
             if (board[r][c] === board[r+1][c]) return false;
         }
     }
-    // no moves left
     gameOver = true;
     undoButton.disabled = true;
     if (showModal) {
@@ -367,13 +348,10 @@ function saveResult() {
     saveButton.style.display = 'none';
     nameInput.style.display = 'none';
     gameOverMessage.textContent = 'Ваш рекорд сохранен!';
-    // add to leaderboard
     const entry = { name: name, score: score, date: new Date().toLocaleDateString() };
     let boardRecords = JSON.parse(localStorage.getItem('leaderboard') || '[]');
     boardRecords.push(entry);
-    // sort descending by score
     boardRecords.sort((a,b) => b.score - a.score);
-    // keep top 10
     boardRecords = boardRecords.slice(0, 10);
     localStorage.setItem('leaderboard', JSON.stringify(boardRecords));
     renderLeaderboard();
@@ -393,7 +371,6 @@ function hideLeaderboard() {
 }
 
 function renderLeaderboard() {
-    // Clear rows except header
     while (leaderboardTable.rows.length > 1) {
         leaderboardTable.deleteRow(1);
     }
