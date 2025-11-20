@@ -1,118 +1,198 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #faf8ef;
-    text-align: center;
+:root{
+  --board-max-width: 520px; /* максимальная ширина поля на десктопе */
+  --board-gap: 12;          /* отступы между ячейками — будут подстраиваться в JS */
+  --cell-size: 100;         /* будет переопределено JS при вычислении размеров */
+  --transition: 180ms;
 }
-h1 {
-    margin-top: 20px;
-    color: #776e65;
+
+* { box-sizing: border-box; }
+body{
+  margin:0;
+  font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+  background: #faf8ef;
+  color: #776e65;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-height:100vh;
+  padding:12px;
 }
-.score-container {
-    margin: 10px;
-    font-size: 24px;
-    font-weight: bold;
+
+.header{
+  width:100%;
+  max-width:calc(var(--board-max-width) + 40px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
 }
-#game-board {
-    position: relative;
-    margin: 0 auto 10px;
-    background: #bbada0;
-    border-radius: 5px;
-    width: 380px;
-    height: 380px;
-    padding: 10px;
+.title{
+  margin:8px 0 0 0;
+  font-size:28px;
+  letter-spacing:1px;
 }
-.controls {
-    margin-bottom: 20px;
+.top-controls{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
 }
-.controls button {
-    margin: 5px;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: none;
-    border-radius: 3px;
-    background-color: #8f7a66;
-    color: #f9f6f2;
-    cursor: pointer;
+.score-box{
+  font-weight:700;
+  font-size:16px;
+  background:#bbada0;
+  color:#f9f6f2;
+  padding:6px 10px;
+  border-radius:6px;
 }
-.controls button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+.buttons button{
+  margin-left:6px;
+  padding:8px 10px;
+  border-radius:6px;
+  border:none;
+  background:#8f7a66;
+  color:#fff;
+  cursor:pointer;
 }
-.modal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(238, 228, 218, 0.73);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.buttons button:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
 }
-.modal.hidden {
-    display: none;
+
+/* центрируем поле */
+.main{
+  width:100%;
+  max-width:calc(var(--board-max-width) + 40px);
+  display:flex;
+  justify-content:center;
+  margin-top:12px;
 }
-#game-over-modal, #leaderboard-modal {
-    background-color: rgba(238,228,218,0.95);
-    padding: 20px;
-    border-radius: 5px;
-    text-align: center;
+#board-wrapper{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
-#game-over-modal p {
-    font-size: 20px;
-    margin-bottom: 10px;
+#game-board{
+  position:relative;
+  width:100%;
+  max-width:var(--board-max-width);
+  background:#bbada0;
+  border-radius:8px;
+  padding:var(--board-gap);
+  /* высота делается равной ширине — JS также использует clientWidth */
+  aspect-ratio: 1/1;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+  touch-action: none;
+  overflow:visible;
 }
-#leaderboard-modal table {
-    margin: 10px auto;
-    border-collapse: collapse;
+
+/* фоновые клетки (фиксированные пустые ячейки) — создаются в JS once */
+.cell-bg{
+  position:absolute;
+  border-radius:6px;
+  background: rgba(238,228,218,0.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color: transparent;
+  user-select:none;
 }
-#leaderboard-modal th, #leaderboard-modal td {
-    padding: 5px 10px;
-    border: 1px solid #ccc;
+
+/* плитка */
+.tile{
+  position:absolute;
+  top:0;
+  left:0;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  line-height: calc(var(--cell-size));
+  border-radius:6px;
+  font-weight:700;
+  font-size: calc(var(--cell-size) * 0.36);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.08);
+  transition: transform var(--transition) ease, background-color 120ms linear, font-size 120ms linear;
+  transform-origin:center center;
+  z-index:2;
+  color: #776e65;
 }
-#mobile-controls {
-    display: none;
+
+/* новый / объединённый эффект */
+.tile.new {
+  animation: appear 160ms ease;
 }
-@media (max-width: 600px) {
-    #game-board {
-        width: 90vw;
-        height: 90vw;
-    }
-    .tile {
-        width: calc(90vw/4 - 10px);
-        height: calc(90vw/4 - 10px);
-        line-height: calc(90vw/4 - 10px);
-        font-size: 20px;
-    }
-    #mobile-controls {
-        display: block;
-        margin: 10px auto;
-    }
-    #mobile-controls button {
-        width: 60px;
-        height: 60px;
-        margin: 5px;
-        font-size: 24px;
-    }
+@keyframes appear {
+  0% { transform: scale(0.1); opacity:0; }
+  60% { transform: scale(1.12); opacity:1; }
+  100% { transform: scale(1); }
 }
-.tile {
-    background: #cdc1b4;
-    width: 80px;
-    height: 80px;
-    line-height: 80px;
-    border-radius: 3px;
-    position: absolute;
-    font-size: 24px;
-    color: #776e65;
-    text-align: center;
+.tile.merged {
+  animation: merged 220ms ease;
 }
-.tile-2 { background: #eee4da; }
-.tile-4 { background: #ede0c8; }
-.tile-8 { background: #f2b179; color: #f9f6f2; }
-.tile-16 { background: #f59563; color: #f9f6f2; }
-.tile-32 { background: #f67c5f; color: #f9f6f2; }
-.tile-64 { background: #f65e3b; color: #f9f6f2; }
-.tile-128 { background: #edcf72; color: #f9f6f2; font-size: 20px; }
-.tile-256 { background: #edcc61; color: #f9f6f2; font-size: 20px; }
-.tile-512 { background: #edc850; color: #f9f6f2; font-size: 20px; }
-.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 18px; }
-.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 18px; }
+@keyframes merged {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+/* цвета плиток (основные) */
+.tile-2 { background:#eee4da; color:#776e65; }
+.tile-4 { background:#ede0c8; color:#776e65; }
+.tile-8 { background:#f2b179; color:#f9f6f2; }
+.tile-16 { background:#f59563; color:#f9f6f2; }
+.tile-32 { background:#f67c5f; color:#f9f6f2; }
+.tile-64 { background:#f65e3b; color:#f9f6f2; }
+.tile-128{ background:#edcf72; color:#f9f6f2; font-size: calc(var(--cell-size) * 0.30); }
+.tile-256{ background:#edcc61; color:#f9f6f2; font-size: calc(var(--cell-size) * 0.30); }
+.tile-512{ background:#edc850; color:#f9f6f2; font-size: calc(var(--cell-size) * 0.28); }
+.tile-1024{ background:#edc53f; color:#f9f6f2; font-size: calc(var(--cell-size) * 0.24); }
+.tile-2048{ background:#edc22e; color:#f9f6f2; font-size: calc(var(--cell-size) * 0.22); }
+
+/* модалки */
+.modal{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.25);
+  z-index:50;
+}
+.modal.hidden{ display:none; }
+.modal-card{
+  background: #fbf6ef;
+  border-radius:10px;
+  padding:16px;
+  min-width:260px;
+  text-align:center;
+  box-shadow:0 10px 20px rgba(0,0,0,0.12);
+}
+.modal-title{ font-size:18px; margin:6px 0; }
+.modal-actions{ margin-top:10px; display:flex; gap:8px; justify-content:center; }
+
+#name-input{ padding:8px; width:80%; border-radius:6px; border:1px solid #ddd; }
+
+/* leaderboard table */
+.leaderboard-table{ width:100%; border-collapse:collapse; margin-top:8px; }
+.leaderboard-table th, .leaderboard-table td{ padding:6px; border-bottom:1px solid #eee; text-align:center; font-size:14px; }
+
+/* мобильные кнопки: показываем на маленьких экранах и скрываем клавиши в модалках */
+.mobile-controls{ display:none; margin-top:10px; }
+.mobile-controls .row{ display:flex; justify-content:center; gap:10px; margin:6px 0; }
+.mobile-controls .m-btn{
+  width:64px; height:64px; border-radius:10px; border:none; background:#8f7a66; color:white; font-size:24px; cursor:pointer;
+}
+
+/* адаптив — на маленьких экранах увеличиваем поле по экрану */
+@media (max-width: 700px){
+  :root{ --board-max-width: 92vw; }
+  .title{ font-size:22px; }
+  .buttons button{ padding:8px; font-size:14px; }
+  .mobile-controls{ display:block; }
+  /* сократим отступы между ячейками на узких экранах — JS также подстроит */
+  :root{ --board-gap: 8; }
+}
